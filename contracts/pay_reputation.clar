@@ -69,3 +69,13 @@
     )
   )
 )
+;; Get user's reputation score
+(define-read-only (get-reputation (user principal))
+  (default-to { score: 0, total-transactions: u0 } (map-get? reputations user))
+)
+
+;; Get detailed payment history between two users
+(define-read-only (get-payment-record (payer principal) (payee principal))
+  (default-to { total-paid: u0, successful-payments: u0, failed-payments: u0 }
+              (map-get? payments { payer: payer, payee: payee }))
+)
