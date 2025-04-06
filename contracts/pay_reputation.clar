@@ -1,30 +1,20 @@
+(define-constant contract-owner tx-sender)
 
-;; title: pay_reputation
-;; version:
-;; summary:
-;; description:
+;; Each payment record
+(define-map payments
+  { payer: principal, payee: principal }
+  {
+    total-paid: uint,
+    successful-payments: uint,
+    failed-payments: uint
+  }
+)
 
-;; traits
-;;
-
-;; token definitions
-;;
-
-;; constants
-;;
-
-;; data vars
-;;
-
-;; data maps
-;;
-
-;; public functions
-;;
-
-;; read only functions
-;;
-
-;; private functions
-;;
-
+;; Global user reputation scores
+(define-map reputations
+  principal
+  {
+    score: int, ;; Can go up or down
+    total-transactions: uint
+  }
+)
