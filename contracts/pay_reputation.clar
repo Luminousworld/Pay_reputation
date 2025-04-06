@@ -18,3 +18,37 @@
     total-transactions: uint
   }
 )
+
+;; Add a successful payment between payer and payee
+(define-public (record-successful-payment (payee principal) (amount uint))
+  (begin
+    ;; Transfer STX from payer to payee
+    (stx-transfer? amount tx-sender payee)
+
+    ;; Update the payment record
+    (let* (
+      (payer tx-sender)
+      (key { payer: payer, payee: payee })
+      (prev (default-to { total-paid: u0, successful-payments: u0, failed-payments: u0 } (map-get? payments key)))
+      (new-payment {
+        total-paid: (+ (get total-paid prev) amount),
+        successful-payments: (+ (get successful-payments prev) u1),
+        failed-payments: (get failed-payments prev)
+      })
+    )
+      (map-set payments key new-payment)
+
+      ;; Update reputation
+      (let* (
+        (old-rep (default-to { score: 0, total-transactions: u0 } (map-get? reputations payer)))
+        (new-rep {
+          score: (+ (get score old-rep) 10), ;; reward +10
+          total-transactions: (+ (get total-transactions old-rep) u1)
+        })
+      )
+        (map-set reputations payer new-rep)
+      )
+    )
+    (ok true)
+  )
+)
