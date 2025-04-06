@@ -52,3 +52,20 @@
     (ok true)
   )
 )
+
+;; Penalize a payer manually (e.g. for dispute)
+(define-public (penalize-payer (payer principal) (penalty int))
+  (begin
+    (asserts! (is-eq tx-sender contract-owner) (err u100))
+    (let (
+      (old-rep (default-to { score: 0, total-transactions: u0 } (map-get? reputations payer)))
+      (new-score (- (get score old-rep) penalty))
+    )
+      (map-set reputations payer {
+        score: new-score,
+        total-transactions: (get total-transactions old-rep)
+      })
+      (ok true)
+    )
+  )
+)
